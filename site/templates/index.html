@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block body %}
+  <header class="hero">
+    <div class="container hero-layout">
+      <div class="hero-title">
+        <p class="eyebrow">Personal library</p>
+        <h1>{{ site.title }}</h1>
+      </div>
+      <div class="hero-summary">
+        <p class="intro">{{ site.intro }}</p>
+        <p class="count">{{ pdf_count }} document{% if pdf_count != 1 %}s{% endif %} available</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container library">
+    {% if groups %}
+      {% for section, entries in groups.items() %}
+        <section class="collection" aria-labelledby="section-{{ loop.index }}">
+          <h2 id="section-{{ loop.index }}">{{ section }}</h2>
+          <div class="document-grid">
+            {% for entry in entries %}
+              <article class="document-card">
+                <div>
+                  <h3>{{ entry.title }}</h3>
+                  {% if entry.description %}
+                    <p class="document-description">{{ entry.description }}</p>
+                  {% endif %}
+                </div>
+                <div class="actions">
+                  <a class="button primary" href="{{ entry.viewer_url }}">Read</a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        </section>
+      {% endfor %}
+    {% else %}
+      <p class="empty-state">No PDF documents have been added yet.</p>
+    {% endif %}
+  </main>
+
+  <footer class="container footer">
+    <p>Built automatically from the PDFs in this repository.</p>
+  </footer>
+{% endblock %}

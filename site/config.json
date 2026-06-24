@@ -1,0 +1,19 @@
+{
+  "title": "Math Notes",
+  "intro": "A growing collection of notes and projects from my mathematics studies.",
+  "description": "Browse and read mathematics notes directly in your browser.",
+  "topic_order": [
+    "topology",
+    "number_theory",
+    "complex_analysis"
+  ],
+  "pdf_order": {
+    "topology": [
+      "topology/project1.pdf",
+      "topology/baire.pdf",
+      "topology/sine_top.pdf"
+    ],
+    "number_theory":  [],
+    "complex_analysis": []
+  }
+}

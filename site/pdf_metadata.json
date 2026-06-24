@@ -1,0 +1,46 @@
+{
+  "complex_analysis/injective.pdf": {
+    "title": "Injective Entire Functions",
+    "description": "A proof that every injective entire function is affine, using Rouché's theorem, Cauchy estimates, singularities at infinity, and the open mapping theorem."
+  },
+  "number_theory/arth_top.pdf": {
+    "title": "Arithmetic Topology on the Integers",
+    "description": "Constructs a topology on the integers from arithmetic progressions, proves its basic sets are clopen, and derives the infinitude of primes topologically."
+  },
+  "number_theory/gaussian.pdf": {
+    "title": "Gaussian Integers and Sums of Two Squares",
+    "description": "Studies norms, units, conjugation, and prime splitting in the Gaussian integers, culminating in the criterion for representing an integer as a sum of two squares."
+  },
+  "number_theory/phi.pdf": {
+    "title": "Euler's Totient Function",
+    "description": "Develops multiplicativity and the prime-factor formula for Euler's totient function, then proves finiteness of its fibers and divisibility under divisors."
+  },
+  "topology/project1.pdf": {
+    "title": "Noetherian and Irreducible Spaces",
+    "description": "Explores hereditary and compactness properties of Noetherian spaces, irreducibility, finite irreducible decompositions, and examples inspired by prime numbers."
+  },
+  "topology/baire.pdf": {
+    "title": "The Baire Category Theorem",
+    "description": "Proves that a countable intersection of open dense subsets of a complete metric space is dense, using nested balls and a Cauchy-sequence construction."
+  },
+  "topology/sine_top.pdf": {
+    "title": "The Topologist's Sine Curve",
+    "description": "Analyzes the classical topologist's sine curve, proving connectedness through closure while showing that adjoining the origin does not produce a path-connected space."
+  },
+  "topology/cauchy_sequences.pdf": {
+    "title": "Completion of Metric Spaces",
+    "description": "Constructs the completion of a metric space from equivalence classes of Cauchy sequences, proves completeness and density of the canonical embedding, and examines completeness under homeomorphism."
+  },
+  "topology/equicontenuity.pdf": {
+    "title": "Baire Category and Incomplete Normed Spaces",
+    "description": "Uses the Baire category theorem to obtain local uniform boundedness for a pointwise bounded family of continuous functions, then proves a natural normed space of polynomials is incomplete."
+  },
+  "topology/tube_lemma.pdf": {
+    "title": "The Tube Lemma and Closed Projections",
+    "description": "Proves the tube lemma, closedness of projections with compact factors, a closed-graph criterion for continuity, and positive separation of disjoint closed sets when one is compact."
+  },
+  "topology/urysohn_theorem.pdf": {
+    "title": "Separation Axioms and Normal Spaces",
+    "description": "Studies hereditary separation properties, Hausdorff quotient spaces formed by collapsing a closed set, and the theorem that regular second-countable spaces are normal."
+  }
+}

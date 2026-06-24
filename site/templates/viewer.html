@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ entry.title }} · {{ site.title }}{% endblock %}
+
+{% block body %}
+  <header class="viewer-header">
+    <a class="back-link" href="{{ base_url }}/">← Library</a>
+    <div class="viewer-title">
+      <p>{{ entry.section }}</p>
+      <h1>{{ entry.title }}</h1>
+      {% if entry.description %}
+        <span>{{ entry.description }}</span>
+      {% endif %}
+    </div>
+<!--    <a class="button" href="{{ entry.asset_url }}" download>Download</a>-->
+  </header>
+
+  <main class="pdf-frame">
+    <object data="{{ entry.asset_url }}" type="application/pdf">
+      <div class="pdf-fallback">
+        <p>Your browser cannot display this PDF inline.</p>
+        <a class="button primary" href="{{ entry.asset_url }}">Open the PDF</a>
+      </div>
+    </object>
+  </main>
+{% endblock %}
