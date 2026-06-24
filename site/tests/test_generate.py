@@ -111,7 +111,14 @@ class GeneratorTests(unittest.TestCase):
             self.assertIn("A Custom Title", index)
             self.assertIn("A custom description for this document.", index)
             self.assertIn("G-TEST123", index)
-            self.assertEqual(len(list((output / "view").rglob("*.html"))), 1)
+            self.assertTrue(
+                (
+                    output
+                    / "view"
+                    / "number_theory"
+                    / "new_note.pdf.html"
+                ).exists()
+            )
 
     def test_build_uses_absolute_site_url_when_provided(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -137,8 +144,11 @@ class GeneratorTests(unittest.TestCase):
                 index,
             )
             self.assertIn(
-                'href="https://example.github.io/math/view/assets/pdfs/topic/note.pdf.html"',
+                'href="https://example.github.io/math/view/topic/note.pdf.html"',
                 index,
+            )
+            self.assertTrue(
+                (output / "view" / "topic" / "note.pdf.html").exists()
             )
 
     def test_missing_override_uses_filename_title(self):
