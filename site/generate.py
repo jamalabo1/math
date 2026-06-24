@@ -4,14 +4,13 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import shutil
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
@@ -56,6 +55,26 @@ def url_path(*parts: str) -> str:
     )
 
 
+def normalize_site_url(site_url: str) -> str:
+    """Validate and normalize an absolute site URL."""
+    site_url = site_url.strip().rstrip("/")
+    if not site_url:
+        return ""
+
+    parsed = urlsplit(site_url)
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        raise ValueError("site_url must be an absolute http:// or https:// URL")
+    if parsed.query or parsed.fragment:
+        raise ValueError("site_url cannot contain a query string or fragment")
+    return site_url
+
+
+def public_url(public_base_url: str, *parts: str) -> str:
+    """Build an encoded root-relative or fully qualified public URL."""
+    path = url_path(*parts)
+    return f"{public_base_url}{path}" if public_base_url else path
+
+
 def find_pdfs(source: Path, output: Path) -> list[Path]:
     output = output.resolve()
     results: list[Path] = []
@@ -74,6 +93,9 @@ def find_pdfs(source: Path, output: Path) -> list[Path]:
 
 def load_config() -> dict[str, object]:
     config = json.loads((SITE_DIR / "config.json").read_text(encoding="utf-8"))
+    if not isinstance(config.get("site_url", ""), str):
+        raise ValueError("config.json site_url must be a string")
+
     topic_order = config.get("topic_order", [])
     if not isinstance(topic_order, list) or any(
         not isinstance(topic, str) for topic in topic_order
@@ -136,6 +158,7 @@ def build_site(
     base_url: str,
     analytics_id: str,
     metadata_path: Optional[Path] = None,
+    site_url: str = "",
 ) -> int:
     source = source.resolve()
     output = output.resolve()
@@ -155,6 +178,8 @@ def build_site(
         lstrip_blocks=True,
     )
     config = load_config()
+    configured_site_url = str(config.get("site_url", ""))
+    public_base_url = normalize_site_url(site_url or configured_site_url) or base_url
     metadata = load_pdf_metadata(metadata_path or SITE_DIR / "pdf_metadata.json")
     entries: list[PdfEntry] = []
 
@@ -166,15 +191,17 @@ def build_site(
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(pdf, destination)
 
-        viewer_id = hashlib.sha256(relative.as_posix().encode()).hexdigest()[:16]
+        # viewer_id = hashlib.sha256(relative.as_posix().encode()).hexdigest()[:16]
+        viewer_id = asset_relative.as_posix()
+
         entry = PdfEntry(
             title=overrides.get("title") or display_name(relative.stem),
             description=overrides.get("description", ""),
             section_key=relative.parent.as_posix(),
             section=display_name(relative.parent.as_posix()) if relative.parent != Path(".") else "General",
             source=relative,
-            asset_url=url_path(base_url, asset_relative.as_posix()),
-            viewer_url=url_path(base_url, "view", f"{viewer_id}.html"),
+            asset_url=public_url(public_base_url, asset_relative.as_posix()),
+            viewer_url=public_url(public_base_url, "view", f"{viewer_id}.html"),
             size=format_size(pdf.stat().st_size),
         )
         entries.append(entry)
@@ -185,7 +212,7 @@ def build_site(
             environment.get_template("viewer.html").render(
                 site=config,
                 entry=entry,
-                base_url=base_url,
+                base_url=public_base_url,
                 analytics_id=analytics_id,
             ),
             encoding="utf-8",
@@ -213,7 +240,7 @@ def build_site(
             site=config,
             groups=grouped_entries,
             pdf_count=len(entries),
-            base_url=base_url,
+            base_url=public_base_url,
             analytics_id=analytics_id,
         ),
         encoding="utf-8",
@@ -228,6 +255,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--source", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path, default=Path("dist"))
     parser.add_argument("--base-url", default="")
+    parser.add_argument(
+        "--site-url",
+        default=os.environ.get("SITE_URL", ""),
+        help="Absolute public site URL used to generate fully qualified links",
+    )
     parser.add_argument(
         "--metadata",
         type=Path,
@@ -245,5 +277,6 @@ if __name__ == "__main__":
         base_url=arguments.base_url,
         analytics_id=os.environ.get("GOOGLE_ANALYTICS_ID", "").strip(),
         metadata_path=arguments.metadata,
+        site_url=arguments.site_url,
     )
     print(f"Generated {count} PDF entries in {arguments.output}")

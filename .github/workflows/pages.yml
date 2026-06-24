@@ -45,6 +45,7 @@ jobs:
           --source .
           --output dist
           --base-url "${{ steps.pages.outputs.base_path }}"
+          --site-url "${{ steps.pages.outputs.base_url }}"
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4

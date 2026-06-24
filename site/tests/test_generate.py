@@ -10,6 +10,7 @@ from generate import (
     build_site,
     display_name,
     pdf_sort_key,
+    public_url,
     topic_sort_key,
     url_path,
 )
@@ -23,6 +24,15 @@ class GeneratorTests(unittest.TestCase):
         self.assertEqual(
             url_path("/math", "assets/pdfs/real analysis/note 1.pdf"),
             "/math/assets/pdfs/real%20analysis/note%201.pdf",
+        )
+
+    def test_public_url_can_generate_absolute_links(self):
+        self.assertEqual(
+            public_url(
+                "https://example.github.io/math",
+                "assets/pdfs/real analysis/note 1.pdf",
+            ),
+            "https://example.github.io/math/assets/pdfs/real%20analysis/note%201.pdf",
         )
 
     def test_topic_order_prioritizes_configured_topics(self):
@@ -101,7 +111,35 @@ class GeneratorTests(unittest.TestCase):
             self.assertIn("A Custom Title", index)
             self.assertIn("A custom description for this document.", index)
             self.assertIn("G-TEST123", index)
-            self.assertEqual(len(list((output / "view").glob("*.html"))), 1)
+            self.assertEqual(len(list((output / "view").rglob("*.html"))), 1)
+
+    def test_build_uses_absolute_site_url_when_provided(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source = root / "source"
+            output = root / "output"
+            pdf = source / "topic" / "note.pdf"
+            pdf.parent.mkdir(parents=True)
+            pdf.write_bytes(b"%PDF-1.4\n")
+
+            build_site(
+                source,
+                output,
+                "/ignored-base-path",
+                "",
+                metadata_path=root / "missing.json",
+                site_url="https://example.github.io/math/",
+            )
+
+            index = (output / "index.html").read_text()
+            self.assertIn(
+                'href="https://example.github.io/math/assets/styles.css"',
+                index,
+            )
+            self.assertIn(
+                'href="https://example.github.io/math/view/assets/pdfs/topic/note.pdf.html"',
+                index,
+            )
 
     def test_missing_override_uses_filename_title(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
