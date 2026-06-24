@@ -192,7 +192,7 @@ def build_site(
         shutil.copy2(pdf, destination)
 
         # viewer_id = hashlib.sha256(relative.as_posix().encode()).hexdigest()[:16]
-        viewer_id = asset_relative.as_posix()
+        viewer_id = relative.as_posix()
 
         entry = PdfEntry(
             title=overrides.get("title") or display_name(relative.stem),
